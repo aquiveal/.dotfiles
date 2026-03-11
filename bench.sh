@@ -45,8 +45,8 @@ run_script redis.sh
 run_script mariadb.sh "$USERNAME"
 
 # 4. User-level setup (Node, Python)
-run_script node.sh "$USERNAME"
-run_script python.sh "$USERNAME"
+run_script node.sh "$USERNAME" 0.40.4 24.14.0
+run_script python.sh "$USERNAME" 3.14
 
 # 5. Frappe Bench setup
 su - "$USERNAME" -c '
