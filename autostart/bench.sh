@@ -28,7 +28,7 @@ run_script() {
 
 # 1. System-level dependencies (Git, wkhtmltopdf, etc.)
 apt-get update
-apt-get install -y git pkg-config xvfb libfontconfig1 fontconfig xfonts-75dpi cron rsync wget curl
+apt-get install -y git pkg-config xvfb libfontconfig1 fontconfig xfonts-75dpi cron rsync wget curl build-essential
 
 ## wkhtmltopdf
 if ! command -v wkhtmltopdf >/dev/null 2>&1; then
