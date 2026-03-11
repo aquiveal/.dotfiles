@@ -8,7 +8,7 @@ export DEBIAN_FRONTEND=noninteractive
 
 # 1. Install MariaDB
 if ! dpkg -l | grep -q "mariadb-server"; then
-  apt-get install -y mariadb-server mariadb-client libmariadb-dev
+  apt-get install -y mariadb-server mariadb-client libmariadb-dev libmariadb-dev-compat libmariadb-dev default-libmysqlclient-dev
 fi
 
 # 2. Setup Persistence on User's Disk
