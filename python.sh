@@ -7,15 +7,15 @@ PYTHON_VERSION=${2:-"3.14"}
 
 export DEBIAN_FRONTEND=noninteractive
 
-su - "$USERNAME" -c '
+su - "$USERNAME" -c "
   if ! command -v uv >/dev/null 2>&1; then
     curl -LsSf https://astral.sh/uv/install.sh | sh
   fi
   
   # Ensure uv is accessible in PATH
-  source $HOME_DIR/.local/bin/env || export PATH="$HOME_DIR/.local/bin:$PATH"
+  source \"\$HOME/.local/bin/env\" || export PATH=\"\$HOME/.local/bin:\$PATH\"
   
-  if ! uv python list | grep -q "$PYTHON_VERSION"; then
+  if ! uv python list | grep -q \"$PYTHON_VERSION\"; then
     uv python install $PYTHON_VERSION --default
   fi
-'
+"

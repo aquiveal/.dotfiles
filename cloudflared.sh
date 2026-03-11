@@ -2,7 +2,7 @@
 set -eux
 
 # Environment variables
-TUNNEL_TOKEN=${2}
+TUNNEL_TOKEN=${1}
 
 # Set non-interactive mode for apt-get
 export DEBIAN_FRONTEND=noninteractive
