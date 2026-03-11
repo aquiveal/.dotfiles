@@ -15,7 +15,7 @@ echo ">>> Starting Frappe/Bench Stack Installation..."
 run_script() {
   local script_name=$1
   shift
-  local url="https://raw.githubusercontent.com/aquiveal/.dotfiles/autostart/refs/heads/main/${script_name}"
+  local url="https://raw.githubusercontent.com/aquiveal/.dotfiles/refs/heads/main/autostart/${script_name}"
   
   if [ -f "./${script_name}" ]; then
     echo "Running local ${script_name}..."
