@@ -11,7 +11,7 @@ NODE_VERSION=${3:-"24.14.0"}
 export DEBIAN_FRONTEND=noninteractive
 
 # Install Node.js
-su - "$USERNAME" -c "
+sudo su - "$USERNAME" -c "
   if [ ! -d \"\$HOME/.nvm\" ]; then
     curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v$NVM_VERSION/install.sh | bash
   fi

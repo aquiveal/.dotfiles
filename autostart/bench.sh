@@ -15,7 +15,7 @@ echo ">>> Starting Frappe/Bench Stack Installation..."
 run_script() {
   local script_name=$1
   shift
-  local url="https://raw.githubusercontent.com/aquiveal/.dotfiles/refs/heads/main/${script_name}"
+  local url="https://raw.githubusercontent.com/aquiveal/.dotfiles/autostart/refs/heads/main/${script_name}"
   
   if [ -f "./${script_name}" ]; then
     echo "Running local ${script_name}..."
@@ -49,7 +49,7 @@ run_script node.sh "$USERNAME" 0.40.4 24.14.0
 run_script python.sh "$USERNAME" 3.14
 
 # 5. Frappe Bench setup
-su - "$USERNAME" -c '
+sudo su - "$USERNAME" -c '
   set -eux
   
   # Ensure uv is accessible in PATH for this session
