@@ -1,0 +1,62 @@
+#aquiveal (Github.com)
+Match host aquiveal
+  HostName github.com
+  User git
+  IdentityFile ~/.ssh/github_aquiveal_zephyrus-g14_rsa4096_2024-07-12
+
+#shreyj7 (Github.com)
+Match host shreyj7
+  HostName github.com
+  User git
+  IdentityFile ~/.ssh/github_shreyj7_zephyrus-14_rsa3072_2024-07-12
+
+# --- START MUTAGEN CODER OVERRIDE ---
+Host *.coder
+	ConnectTimeout=0
+	StrictHostKeyChecking=no
+	UserKnownHostsFile=/dev/null
+	LogLevel ERROR
+	ProxyCommand C:/Users/aquiv/.ssh/coder.bat %h
+# --- END MUTAGEN CODER OVERRIDE ---
+
+# ------------START-CODER-----------
+# This section is managed by coder. DO NOT EDIT.
+#
+# You should not hand-edit this section unless you are removing it, all
+# changes will be lost when running "coder config-ssh".
+#
+Host coder.*
+	ConnectTimeout=0
+	StrictHostKeyChecking=no
+	UserKnownHostsFile=/dev/null
+	LogLevel ERROR
+	ProxyCommand "C:\Program Files\Coder\bin\coder.exe" --global-config C:\Users\aquiv\AppData\Roaming\coderv2 ssh --stdio --ssh-host-prefix coder. %h
+
+Host *.coder
+	ConnectTimeout=0
+	StrictHostKeyChecking=no
+	UserKnownHostsFile=/dev/null
+	LogLevel ERROR
+
+Match host *.coder !exec "for /f %%a in ('powershell.exe -Command [char]34') do @cmd.exe /c %%aC:\Program Files\Coder\bin\coder.exe%%a connect exists %h"
+	ProxyCommand "C:\Program Files\Coder\bin\coder.exe" --global-config C:\Users\aquiv\AppData\Roaming\coderv2 ssh --stdio --hostname-suffix coder %h
+# ------------END-CODER------------
+
+# --- START CODER VSCODE coder.aurumor.com ---
+Host coder-vscode.coder.aurumor.com--*
+  ConnectTimeout 0
+  LogLevel ERROR
+  ProxyCommand "c:\Users\aquiv\AppData\Roaming\Code\User\globalStorage\coder.coder-remote\coder.aurumor.com\bin\coder-windows-amd64.exe" --global-config "c:\Users\aquiv\AppData\Roaming\Code\User\globalStorage\coder.coder-remote\coder.aurumor.com" ssh --disable-autostart --stdio --usage-app=vscode --network-info-dir "c:\Users\aquiv\AppData\Roaming\Code\User\globalStorage\coder.coder-remote\net" --ssh-host-prefix coder-vscode.coder.aurumor.com-- %h
+  SetEnv CODER_SSH_SESSION_TYPE=vscode
+  StrictHostKeyChecking no
+  UserKnownHostsFile /dev/null
+# --- END CODER VSCODE coder.aurumor.com ---  
+
+# Explicit Host Entry for Coder Workspace
+Host aryans-coder
+  HostName main.aryans-coder.aquiveal.coder
+  ConnectTimeout=0
+  StrictHostKeyChecking=no
+  UserKnownHostsFile=/dev/null
+  LogLevel ERROR
+  ProxyCommand C:\Users\aquiv\.ssh\coder.bat %h
