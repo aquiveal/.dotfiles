@@ -6,7 +6,7 @@ set -e
 # Ensure the script is run as root
 if [[ $EUID -ne 0 ]]; then
    echo "Not running as root, attempting to escalate privileges..."
-   exec sudo -H "$0" "$@"
+   exec sudo bash "$0" "$@"
    exit $?
 fi
 
