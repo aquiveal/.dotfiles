@@ -5,8 +5,15 @@ set -e
 
 # Ensure the script is run as root
 if [[ $EUID -ne 0 ]]; then
-   echo "Error: This script must be run as root."
-   exit 1
+   echo "Not running as root, attempting to escalate privileges..."
+   exec sudo -H "$0" "$@"
+   exit $?
+fi
+
+# Check if OpenMediaVault is already installed
+if dpkg -l | grep -q "openmediavault"; then
+    echo "OpenMediaVault is already installed. Exiting to prevent redundant installation."
+    exit 0
 fi
 
 echo "Starting OpenMediaVault 8 (Synchrony) Installation on Debian 13"
