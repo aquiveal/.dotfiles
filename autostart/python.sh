@@ -18,4 +18,6 @@ sudo su - "$USERNAME" -c "
   if ! uv python list | grep -q \"$PYTHON_VERSION\"; then
     uv python install $PYTHON_VERSION --default
   fi
+  
+  curl -sSL https://pdm-project.org/install.sh | bash
 "
