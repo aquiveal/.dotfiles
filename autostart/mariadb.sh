@@ -35,7 +35,7 @@ systemctl start mariadb || true
 systemctl enable mariadb || true
 
 # 3. Headless Secure Installation
-mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED VIA unix_socket;" || true
+mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED BY 'root';" || true
 mysql -e "DELETE FROM mysql.user WHERE User='';" || true
 mysql -e "DROP DATABASE IF EXISTS test;" || true
 mysql -e "DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';" || true
