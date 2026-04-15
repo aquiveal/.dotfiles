@@ -42,7 +42,13 @@ until docker exec mariadb mariadb-admin ping -h localhost -uroot -proot --silent
   sleep 1
 done
 
-# Headless Secure Installation cleanup
+# Headless Secure Installation cleanup and remote access setup
+docker exec mariadb mariadb -uroot -proot -e "CREATE USER IF NOT EXISTS 'root'@'%' IDENTIFIED BY 'root';" || true
+docker exec mariadb mariadb -uroot -proot -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' WITH GRANT OPTION;" || true
+docker exec mariadb mariadb -uroot -proot -e "UPDATE IGNORE mysql.global_priv SET Host='%' WHERE Host='localhost';" || true
+docker exec mariadb mariadb -uroot -proot -e "DELETE FROM mysql.global_priv WHERE Host='localhost';" || true
+docker exec mariadb mariadb -uroot -proot -e "UPDATE IGNORE mysql.db SET Host='%' WHERE Host='localhost';" || true
+docker exec mariadb mariadb -uroot -proot -e "DELETE FROM mysql.db WHERE Host='localhost';" || true
 docker exec mariadb mariadb -uroot -proot -e "DELETE FROM mysql.user WHERE User='';" || true
 docker exec mariadb mariadb -uroot -proot -e "DROP DATABASE IF EXISTS test;" || true
 docker exec mariadb mariadb -uroot -proot -e "DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';" || true
