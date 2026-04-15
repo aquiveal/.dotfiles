@@ -1,42 +1,49 @@
 #!/bin/bash
 set -eux
+
+# Environment variables
 USERNAME=${1}
 HOME_DIR="/home/$USERNAME"
-MYSQL_DATA_DIR="$HOME_DIR/.mysql"
+DATA_DIR="$HOME_DIR/.mysql"
 
+# Set non-interactive mode for apt-get
 export DEBIAN_FRONTEND=noninteractive
 
-# 1. Install MariaDB
-if ! dpkg -l | grep -q "mariadb-server"; then
-  apt-get install -y mariadb-server mariadb-client libmariadb-dev libmariadb-dev-compat
+# Install MariaDB client tools
+sudo apt update
+sudo apt install mariadb-client -y
+
+# Check if Docker is installed
+if ! command -v docker >/dev/null 2>&1; then
+  echo "Docker is not installed. Running local docker.sh..."
+  if [ -f "./autostart/docker.sh" ]; then
+    sudo bash ./autostart/docker.sh "$USERNAME"
+  else
+    curl -fsSL "https://raw.githubusercontent.com/aquiveal/.dotfiles/refs/heads/main/autostart/docker.sh" -o /tmp/docker.sh
+    sudo bash /tmp/docker.sh "$USERNAME"
+  fi
 fi
 
-# 2. Setup Persistence on User's Disk
-systemctl stop mariadb || true
-mkdir -p "$MYSQL_DATA_DIR"
-chown -R mysql:mysql "$MYSQL_DATA_DIR"
+# Setup Persistence on User's Disk
+mkdir -p "$DATA_DIR"
 
-if ! mountpoint -q /var/lib/mysql; then
-  ## Tell AppArmor to allow MySQL to access the new location on the persistent disk
-  if ! grep -q "$MYSQL_DATA_DIR" /etc/apparmor.d/tunables/alias; then
-    echo "alias /var/lib/mysql/ -> $MYSQL_DATA_DIR/," >> /etc/apparmor.d/tunables/alias
-    systemctl restart apparmor || true
-  fi
+# Run the MariaDB Docker container
+docker run -d \
+  --name mariadb \
+  --restart unless-stopped \
+  -e MARIADB_ROOT_PASSWORD=root \
+  -v "$DATA_DIR":/var/lib/mysql \
+  -p 3306:3306 \
+  mariadb:latest || true
 
-  ## If target dir is empty, sync defaults to it
-  if [ -z "$(ls -A "$MYSQL_DATA_DIR")" ]; then
-    rsync -a /var/lib/mysql/ "$MYSQL_DATA_DIR/"
-  fi
-  
-  mount --bind "$MYSQL_DATA_DIR" /var/lib/mysql
-fi
+# Wait for MariaDB to become ready
+echo "Waiting for MariaDB to be ready..."
+until docker exec mariadb mariadb-admin ping -h localhost -uroot -proot --silent >/dev/null 2>&1; do
+  sleep 1
+done
 
-systemctl start mariadb || true
-systemctl enable mariadb || true
-
-# 3. Headless Secure Installation
-mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED BY 'root';" || true
-mysql -e "DELETE FROM mysql.user WHERE User='';" || true
-mysql -e "DROP DATABASE IF EXISTS test;" || true
-mysql -e "DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';" || true
-mysql -e "FLUSH PRIVILEGES;" || true
+# Headless Secure Installation cleanup
+docker exec mariadb mariadb -uroot -proot -e "DELETE FROM mysql.user WHERE User='';" || true
+docker exec mariadb mariadb -uroot -proot -e "DROP DATABASE IF EXISTS test;" || true
+docker exec mariadb mariadb -uroot -proot -e "DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';" || true
+docker exec mariadb mariadb -uroot -proot -e "FLUSH PRIVILEGES;" || true
