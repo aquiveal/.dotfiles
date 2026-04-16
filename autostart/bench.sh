@@ -39,7 +39,7 @@ if ! command -v wkhtmltopdf >/dev/null 2>&1; then
 fi
 
 # 2. Redis setup
-run_script redis.sh
+run_script redis.sh "$USERNAME"
 
 # 3. MariaDB setup
 run_script mariadb.sh "$USERNAME"
