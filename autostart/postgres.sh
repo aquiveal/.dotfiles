@@ -27,20 +27,20 @@ DATA_DIR="/home/$USERNAME/.postgresql"
 mkdir -p "$DATA_DIR"
 
 # Run the PostgreSQL Docker container
-docker run -d \
+CONTAINER_ID=$(docker run -d \
   --restart unless-stopped \
   -e POSTGRES_USER=postgres \
   -e POSTGRES_PASSWORD=postgres \
   -e POSTGRES_DB=postgres \
   -v "$DATA_DIR":/var/lib/postgresql/data \
   -p 5434:5432 \
-  postgres:17-alpine || true
+  postgres:17-alpine)
 
 # Wait for PostgreSQL to become ready
 echo "Waiting for PostgreSQL to be ready..."
 MAX_RETRIES=30
 RETRY_COUNT=0
-until docker exec postgres pg_isready -U postgres > /dev/null 2>&1; do
+until docker exec "$CONTAINER_ID" pg_isready -U postgres > /dev/null 2>&1; do
   sleep 1
   RETRY_COUNT=$((RETRY_COUNT+1))
   if [ "$RETRY_COUNT" -ge "$MAX_RETRIES" ]; then
@@ -52,6 +52,6 @@ done
 # Create additional databases if provided as arguments
 for DB_NAME in "${@:2}"; do
   echo "Checking/Creating database: $DB_NAME"
-  docker exec postgres psql -U postgres -tc "SELECT 1 FROM pg_database WHERE datname = '$DB_NAME'" | grep -q 1 || \
-    docker exec postgres psql -U postgres -c "CREATE DATABASE \"$DB_NAME\";"
+  docker exec "$CONTAINER_ID" psql -U postgres -tc "SELECT 1 FROM pg_database WHERE datname = '$DB_NAME'" | grep -q 1 || \
+    docker exec "$CONTAINER_ID" psql -U postgres -c "CREATE DATABASE \"$DB_NAME\";"
 done
