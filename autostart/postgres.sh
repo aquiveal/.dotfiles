@@ -10,8 +10,8 @@ export DEBIAN_FRONTEND=noninteractive
 
 while pgrep -x apt >/dev/null || pgrep -x apt-get >/dev/null || pgrep -x dpkg >/dev/null; do echo "Waiting for apt/dpkg to finish..."; sleep 1; done
 
-sudo apt update
-sudo apt install postgresql-client -y
+sudo apt-get -qq update
+sudo apt-get install -y -qq postgresql-client < /dev/null
 
 # Check if Docker is installed, pull and install if not
 if ! command -v docker >/dev/null 2>&1; then
@@ -39,8 +39,15 @@ docker run -d \
 
 # Wait for PostgreSQL to become ready
 echo "Waiting for PostgreSQL to be ready..."
+MAX_RETRIES=30
+RETRY_COUNT=0
 until docker exec postgres pg_isready -U postgres > /dev/null 2>&1; do
   sleep 1
+  RETRY_COUNT=$((RETRY_COUNT+1))
+  if [ "$RETRY_COUNT" -ge "$MAX_RETRIES" ]; then
+    echo "PostgreSQL failed to start."
+    exit 1
+  fi
 done
 
 # Create additional databases if provided as arguments
