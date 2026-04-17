@@ -13,8 +13,8 @@ export DEBIAN_FRONTEND=noninteractive
 
 while pgrep -x apt >/dev/null || pgrep -x apt-get >/dev/null || pgrep -x dpkg >/dev/null; do echo "Waiting for apt/dpkg to finish..."; sleep 1; done
 
-sudo apt update
-sudo apt install redis-tools redis-server -y
+sudo apt-get -qq update
+sudo apt-get install -y -qq redis-tools < /dev/null
 
 # Check if Docker is installed
 if ! command -v docker >/dev/null 2>&1; then
@@ -40,6 +40,13 @@ docker run -d \
 
 # Wait for Redis to become ready
 echo "Waiting for Redis to be ready..."
+MAX_RETRIES=30
+RETRY_COUNT=0
 until docker exec redis redis-cli ping | grep -q PONG; do
   sleep 1
+  RETRY_COUNT=$((RETRY_COUNT+1))
+  if [ "$RETRY_COUNT" -ge "$MAX_RETRIES" ]; then
+    echo "Redis failed to start."
+    exit 1
+  fi
 done
