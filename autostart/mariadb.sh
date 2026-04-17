@@ -10,6 +10,9 @@ DATA_DIR="$HOME_DIR/.mysql"
 export DEBIAN_FRONTEND=noninteractive
 
 # Install MariaDB client tools
+
+while pgrep -x apt >/dev/null || pgrep -x apt-get >/dev/null || pgrep -x dpkg >/dev/null; do echo "Waiting for apt/dpkg to finish..."; sleep 1; done
+
 sudo apt update
 sudo apt install mariadb-client -y
 

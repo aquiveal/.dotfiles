@@ -9,9 +9,12 @@ DATA_DIR="$HOME_DIR/.redis"
 # Set non-interactive mode for apt-get
 export DEBIAN_FRONTEND=noninteractive
 
-# Install Redis tools (for redis-cli)
+# Install Redis tools and server
+
+while pgrep -x apt >/dev/null || pgrep -x apt-get >/dev/null || pgrep -x dpkg >/dev/null; do echo "Waiting for apt/dpkg to finish..."; sleep 1; done
+
 sudo apt update
-sudo apt install redis-tools -y
+sudo apt install redis-tools redis-server -y
 
 # Check if Docker is installed
 if ! command -v docker >/dev/null 2>&1; then
