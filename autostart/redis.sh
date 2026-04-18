@@ -36,7 +36,7 @@ docker run -d \
   --name "$CONTAINER_NAME" \
   --restart unless-stopped \
   -v "$DATA_DIR":/data \
-  -p 6379:6379 \
+  -p 6380:6379 \
   redis:latest || true
 
 # Wait for Redis to become ready
