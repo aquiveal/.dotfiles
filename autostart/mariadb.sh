@@ -38,7 +38,7 @@ docker run -d \
   -e MARIADB_ROOT_PASSWORD=root \
   -v "$DATA_DIR":/var/lib/mysql \
   -p 3306:3306 \
-  mariadb:latest || true
+  mariadb:11.8 || true
 
 # Wait for MariaDB to become ready
 echo "Waiting for MariaDB to be ready..."
