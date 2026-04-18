@@ -31,18 +31,20 @@ fi
 mkdir -p "$DATA_DIR"
 
 # Run the MariaDB Docker container
-CONTAINER_ID=$(docker run -d \
+CONTAINER_NAME="mariadb-autostart"
+docker run -d \
+  --name "$CONTAINER_NAME" \
   --restart unless-stopped \
   -e MARIADB_ROOT_PASSWORD=root \
   -v "$DATA_DIR":/var/lib/mysql \
   -p 3306:3306 \
-  mariadb:latest)
+  mariadb:latest || true
 
 # Wait for MariaDB to become ready
 echo "Waiting for MariaDB to be ready..."
 MAX_RETRIES=30
 RETRY_COUNT=0
-until docker exec "$CONTAINER_ID" mariadb-admin ping -h localhost -uroot -proot --silent >/dev/null 2>&1; do
+until docker exec "$CONTAINER_NAME" mariadb-admin ping -h localhost -uroot -proot --silent >/dev/null 2>&1; do
   sleep 1
   RETRY_COUNT=$((RETRY_COUNT+1))
   if [ "$RETRY_COUNT" -ge "$MAX_RETRIES" ]; then
@@ -52,13 +54,13 @@ until docker exec "$CONTAINER_ID" mariadb-admin ping -h localhost -uroot -proot 
 done
 
 # Headless Secure Installation cleanup and remote access setup
-docker exec "$CONTAINER_ID" mariadb -uroot -proot -e "CREATE USER IF NOT EXISTS 'root'@'%' IDENTIFIED BY 'root';" || true
-docker exec "$CONTAINER_ID" mariadb -uroot -proot -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' WITH GRANT OPTION;" || true
-docker exec "$CONTAINER_ID" mariadb -uroot -proot -e "UPDATE IGNORE mysql.global_priv SET Host='%' WHERE Host='localhost';" || true
-docker exec "$CONTAINER_ID" mariadb -uroot -proot -e "DELETE FROM mysql.global_priv WHERE Host='localhost';" || true
-docker exec "$CONTAINER_ID" mariadb -uroot -proot -e "UPDATE IGNORE mysql.db SET Host='%' WHERE Host='localhost';" || true
-docker exec "$CONTAINER_ID" mariadb -uroot -proot -e "DELETE FROM mysql.db WHERE Host='localhost';" || true
-docker exec "$CONTAINER_ID" mariadb -uroot -proot -e "DELETE FROM mysql.user WHERE User='';" || true
-docker exec "$CONTAINER_ID" mariadb -uroot -proot -e "DROP DATABASE IF EXISTS test;" || true
-docker exec "$CONTAINER_ID" mariadb -uroot -proot -e "DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';" || true
-docker exec "$CONTAINER_ID" mariadb -uroot -proot -e "FLUSH PRIVILEGES;" || true
+docker exec "$CONTAINER_NAME" mariadb -uroot -proot -e "CREATE USER IF NOT EXISTS 'root'@'%' IDENTIFIED BY 'root';" || true
+docker exec "$CONTAINER_NAME" mariadb -uroot -proot -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' WITH GRANT OPTION;" || true
+docker exec "$CONTAINER_NAME" mariadb -uroot -proot -e "UPDATE IGNORE mysql.global_priv SET Host='%' WHERE Host='localhost';" || true
+docker exec "$CONTAINER_NAME" mariadb -uroot -proot -e "DELETE FROM mysql.global_priv WHERE Host='localhost';" || true
+docker exec "$CONTAINER_NAME" mariadb -uroot -proot -e "UPDATE IGNORE mysql.db SET Host='%' WHERE Host='localhost';" || true
+docker exec "$CONTAINER_NAME" mariadb -uroot -proot -e "DELETE FROM mysql.db WHERE Host='localhost';" || true
+docker exec "$CONTAINER_NAME" mariadb -uroot -proot -e "DELETE FROM mysql.user WHERE User='';" || true
+docker exec "$CONTAINER_NAME" mariadb -uroot -proot -e "DROP DATABASE IF EXISTS test;" || true
+docker exec "$CONTAINER_NAME" mariadb -uroot -proot -e "DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';" || true
+docker exec "$CONTAINER_NAME" mariadb -uroot -proot -e "FLUSH PRIVILEGES;" || true
