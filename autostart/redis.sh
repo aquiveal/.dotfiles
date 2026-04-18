@@ -31,17 +31,19 @@ fi
 mkdir -p "$DATA_DIR"
 
 # Run the Redis Docker container
-CONTAINER_ID=$(docker run -d \
+CONTAINER_NAME="redis-autostart"
+docker run -d \
+  --name "$CONTAINER_NAME" \
   --restart unless-stopped \
   -v "$DATA_DIR":/data \
   -p 6379:6379 \
-  redis:latest)
+  redis:latest || true
 
 # Wait for Redis to become ready
 echo "Waiting for Redis to be ready..."
 MAX_RETRIES=30
 RETRY_COUNT=0
-until docker exec "$CONTAINER_ID" redis-cli ping | grep -q PONG; do
+until docker exec "$CONTAINER_NAME" redis-cli ping | grep -q PONG; do
   sleep 1
   RETRY_COUNT=$((RETRY_COUNT+1))
   if [ "$RETRY_COUNT" -ge "$MAX_RETRIES" ]; then
