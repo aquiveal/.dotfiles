@@ -22,6 +22,18 @@ sudo su - "$USERNAME" -c "
     sleep 2
   done
 
+  # Create persistent directories for hatchet
+  mkdir -p \$HOME/.hatchet/config
+  mkdir -p \$HOME/.hatchet/postgres
+  
+  # Create named volumes bound to the persistent directories if they don't exist
+  if ! docker volume inspect hatchet-cli_hatchet_config > /dev/null 2>&1; then
+    docker volume create --driver local --opt type=none --opt device=\$HOME/.hatchet/config --opt o=bind hatchet-cli_hatchet_config
+  fi
+  if ! docker volume inspect hatchet-cli_postgres_data > /dev/null 2>&1; then
+    docker volume create --driver local --opt type=none --opt device=\$HOME/.hatchet/postgres --opt o=bind hatchet-cli_postgres_data
+  fi
+
   # Start the local Hatchet development server
   echo \"Starting Hatchet local server...\"
   hatchet server start
