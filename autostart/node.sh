@@ -10,6 +10,11 @@ NODE_VERSION=${3:-"24.14.0"}
 # Set non-interactive mode for apt-get
 export DEBIAN_FRONTEND=noninteractive
 
+# Ensure required dependencies for pnpm are installed
+while pgrep -x apt >/dev/null || pgrep -x apt-get >/dev/null || pgrep -x dpkg >/dev/null; do echo "Waiting for apt/dpkg to finish..."; sleep 1; done
+sudo apt-get -qq update
+sudo apt-get install -y -qq libatomic1 < /dev/null
+
 # Install Node.js
 sudo su - "$USERNAME" -c "
   if [ ! -d \"\$HOME/.nvm\" ]; then
