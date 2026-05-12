@@ -19,5 +19,8 @@ sudo su - "$USERNAME" -c "
     uv python install $PYTHON_VERSION --default
   fi
   
-  curl -sSL https://pdm-project.org/install.sh | bash
+  if ! command -v pdm >/dev/null 2>&1; then
+    uv tool install pdm
+  fi
+  pdm config use_uv true
 "
