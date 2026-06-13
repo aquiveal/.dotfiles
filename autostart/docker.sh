@@ -31,5 +31,5 @@ if [ -n "$GITHUB_PAT" ]; then
     sleep 2
   done
   echo "Logging into ghcr.io..."
-  echo "$GITHUB_PAT" | sg docker -c "docker login ghcr.io -u '$GITHUB_USERNAME' --password-stdin"
+  echo "$GITHUB_PAT" | sudo -u "$USERNAME" docker login ghcr.io -u "$GITHUB_USERNAME" --password-stdin
 fi
