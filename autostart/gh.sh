@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -eux
+set -euxo pipefail
 
 GITHUB_PAT=${1:-}
 
@@ -23,7 +23,9 @@ if gh auth status >/dev/null 2>&1; then
 else
     if [ -n "$GITHUB_PAT" ]; then
         echo "Authenticating using GITHUB_PAT..."
+        set +x
         echo "$GITHUB_PAT" | gh auth login --with-token
+        set -x
         gh config set -h github.com git_protocol https
         echo "Authentication complete."
     else
