@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+set -eux
+
+GITHUB_PAT=${1:-}
 
 # 1. Install curl if you don't have it
 type -p curl >/dev/null || (sudo apt update && sudo apt install curl -y)
