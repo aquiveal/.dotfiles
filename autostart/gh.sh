@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+set -euxo pipefail
+
+GITHUB_PAT=${1:-}
 
 # 1. Install curl if you don't have it
 type -p curl >/dev/null || (sudo apt update && sudo apt install curl -y)
@@ -20,7 +23,9 @@ if gh auth status >/dev/null 2>&1; then
 else
     if [ -n "$GITHUB_PAT" ]; then
         echo "Authenticating using GITHUB_PAT..."
+        set +x
         echo "$GITHUB_PAT" | gh auth login --with-token
+        set -x
         gh config set -h github.com git_protocol https
         echo "Authentication complete."
     else
