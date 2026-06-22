@@ -1,0 +1,6 @@
+[runemodule ".agents/skills/3proxy/modules/3proxy"]
+	url = https://github.com/3proxy/3proxy/tree/master
+	path = .agents/skills/3proxy/modules/3proxy
+[runemodule ".agents/skills/python-logging/modules/python-logging"]
+	url = https://github.com/aurumorinc/python-loggin/tree/main
+	path = .agents/skills/python-logging/modules/python-logging
