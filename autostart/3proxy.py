@@ -241,13 +241,20 @@ def main() -> None:
     if not is_admin():
         logger.info("Not running as Administrator. Requesting elevation...")
         script_path = os.path.abspath(sys.argv[0])
-        cmd_args = f'"{script_path}" {" ".join(sys.argv[1:])}'
         
-        ret = ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, cmd_args, None, 1)
-        if ret <= 32:
-            logger.error("Failed to elevate privileges", error_code=ret)
-            sys.exit(1)
-        sys.exit(0)
+        # Build the argument list carefully for PowerShell Start-Process
+        # We need to escape single quotes if they exist, though they rarely do in sys.argv
+        args_str = " ".join(f'"{arg}"' for arg in sys.argv[1:])
+        ps_arg_list = f'"{script_path}" {args_str}'.strip()
+        
+        # Use PowerShell's Start-Process with -Wait. This blocks the current non-elevated
+        # process from exiting, which is critical when running via `uv run URL` so that
+        # the ephemeral environment and temporary script file are not deleted before
+        # the elevated process finishes.
+        ps_cmd = f"Start-Process -FilePath '{sys.executable}' -ArgumentList '{ps_arg_list}' -Verb RunAs -Wait"
+        
+        res = subprocess.run(["powershell", "-Command", ps_cmd])
+        sys.exit(res.returncode)
 
     try:
         setup_directories_and_defender(args.install_dir)

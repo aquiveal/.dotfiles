@@ -10,6 +10,7 @@ This repository contains configuration files and initialization scripts for sett
   - `node.sh`: Installs Node.js via NVM, along with Yarn and pnpm.
   - `python.sh`: Installs Python using `uv` and sets up `pdm`.
   - `tailscale.sh`: Installs and configures Tailscale for secure networking.
+  - `3proxy.py`: A Windows Python script (executable via `uv run`) that downloads, configures, and registers [3proxy](https://3proxy.org/) as a Windows Service, automatically handling Windows Defender exclusions and Firewall rules.
   - *Other scripts*: Includes setup for Kubernetes tools (`kubectl`, `helm`, `kustomize`), databases (`postgres`, `mariadb`, `redis`), and various utilities (`gh`, `cloudflared`, etc.).
 - **`coder.bat`**: A Windows batch script that establishes a Coder SSH connection while launching a background synchronization script.
 - **`gcloud.bat`**: A Windows batch script designed to sync local Google Cloud credentials to the remote Coder workspace. It verifies local tokens, polls for SSH readiness, and securely copies the credentials.
